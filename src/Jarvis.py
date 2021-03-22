@@ -55,10 +55,6 @@ class Jarvis:
 
                 countLine += 1
 
-        if self.infos[Jarvis.CategoryDesc.TRANSITIONS] is not None:
-            for trans in self.infos[Jarvis.CategoryDesc.TRANSITIONS]:
-                print(trans)
-
     '''
     Parsing Partie META
 
@@ -67,6 +63,7 @@ class Jarvis:
         - Regarde si l'élément META n'est pas écrit dans le langage INPUT et OUTPUT dans l'alphabet.
 
     '''
+
     def __parsing_META(self, splitLine: [str], countLine: int):
         if not self.is_meta_defined:
             if self.infos[Jarvis.CategoryDesc.META] == self.infos[Jarvis.CategoryDesc.INPUT] \
@@ -86,7 +83,6 @@ class Jarvis:
                 "Parsing ['{}'|L:{}] | This type of information has already been given.".format(
                     Jarvis.CategoryDesc.NB_STATES, countLine))
 
-
     '''
         Parsing Partie INPUT
 
@@ -94,6 +90,7 @@ class Jarvis:
         - Le méta caractère du mot vide ne doit pas être dans la ligne.
         - Regarde si l'information caractérisant le INPUT a déjà été donnée.
     '''
+
     def __parsing_INPUT(self, splitLine: [str], countLine: int):
         if not self.is_input_alphabet_set:
             if len(splitLine) != 2:
@@ -119,6 +116,7 @@ class Jarvis:
         - Le méta caractère du mot vide ne doit pas être dans la ligne.
         - Regarde si l'information caractérisant le OUTPUT a déjà été donnée.
     '''
+
     def __parsing_OUTPUT(self, splitLine: [str], countLine: int):
         if not self.is_output_alphabet_set:
             if len(splitLine) != 2:
@@ -145,6 +143,7 @@ class Jarvis:
         - Regarde si l'argument donné n'est pas 0 -> invalide, cela signifie qu'il n'y a pas d'état.
         - Regarde si l'argument donné est bien supérieur aux nombres dans les listes INIT et FINAL.
     '''
+
     def __parsing_NB_STATES(self, splitLine: [str], countLine: int):
         if len(splitLine) == 2:
             nbStates = splitLine[1]
@@ -164,7 +163,11 @@ class Jarvis:
                     "Parsing ['{}'|L:{}] | The given argument surpass the number of state already know by the program [expected '< {}' - got '{}']".format(
                         Jarvis.CategoryDesc.NB_STATES.value, countLine, maxValue, nbStates))
 
-            self.infos[Jarvis.CategoryDesc.TRANSITIONS] = [[None] * nbStates] * nbStates
+            self.infos[Jarvis.CategoryDesc.TRANSITIONS] = []
+            for count in range(nbStates):
+                self.infos[Jarvis.CategoryDesc.TRANSITIONS].append({})
+
+            self.infos[Jarvis.CategoryDesc.TRANSITIONS][0]['s'] = "test"
             self.infos[Jarvis.CategoryDesc.NB_STATES] = nbStates
         else:
             raise Exception(
@@ -180,6 +183,7 @@ class Jarvis:
             - Regarde si l'argument donné existe déjà dans la liste d'initialisation.
             - Regarde, si le nombre d'état est déjà spécifié, si l'argument est bien supérieur ou égal au nombre d'état.
     '''
+
     def __parsing_INIT(self, splitLine: [str], countLine: int):
         if not len(splitLine) >= 2:
             raise Exception(
@@ -203,8 +207,6 @@ class Jarvis:
                         Jarvis.CategoryDesc.NB_STATES.value, countLine, self.infos[Jarvis.CategoryDesc.NB_STATES], arg))
             self.infos[Jarvis.CategoryDesc.INIT].append(int(arg))
 
-        print(self.infos[Jarvis.CategoryDesc.INIT])
-
     '''
         Parsing Partie FINAL
 
@@ -214,6 +216,7 @@ class Jarvis:
             - Regarde si l'argument donné existe déjà dans la liste finale.
             - Regarde, si le nombre d'état est déjà spécifié, si l'argument est bien supérieur ou égal au nombre d'état.
     '''
+
     def __parsing_FINAL(self, splitLine: [str], countLine: int):
         if not len(splitLine) >= 2:
             raise Exception(
@@ -236,10 +239,99 @@ class Jarvis:
                         Jarvis.CategoryDesc.FINAL.value, countLine, self.infos[Jarvis.CategoryDesc.NB_STATES], arg))
             self.infos[Jarvis.CategoryDesc.FINAL].append(int(arg))
 
-        print(self.infos[Jarvis.CategoryDesc.FINAL])
+    '''
+        - Regarde si les deux états font partis des états disponibles
+        - Regarde si les deux transitions font partis de l'alphabet de sortie
+        - Regarde si un élément n'a jamais eu de transitions
+    '''
 
     def __parsing_TRANSITIONS(self, splitLine: [str], countLine: int):
-        print(splitLine)
+        if 4 < len(splitLine) > 5:
+            raise Exception(
+                "Parsing ['{}'|L:{}] | The argument size of the line didn't correspond [expected '{}' - got '{}']".format(
+                    Jarvis.CategoryDesc.TRANSITIONS.value, countLine, "4 <-> 5", len(splitLine)))
+
+        if len(splitLine) == 4:
+            splitLine.insert(4, self.infos[Jarvis.CategoryDesc.META])
+
+        if self.infos[Jarvis.CategoryDesc.NB_STATES] <= 0:
+            raise Exception(
+                "Parsing ['{}'|L:{}] | The number of state isn't correct or inexistant [expected '{}' - got '{}']".format(
+                    Jarvis.CategoryDesc.TRANSITIONS.value, countLine,
+                    "{} > 0".format(Jarvis.CategoryDesc.NB_STATES.value), self.infos[Jarvis.CategoryDesc.NB_STATES]))
+
+        if splitLine[1].isnumeric() and splitLine[3].isnumeric():
+            if int(splitLine[1]) > (self.infos[Jarvis.CategoryDesc.NB_STATES]):
+                raise Exception(
+                    "Parsing ['{}'|L:{}] | State numbers are not supposed to be equal or more than the number of states : expected less than {}, got {}"
+                        .format(Jarvis.CategoryDesc.TRANSITIONS.value, countLine,
+                                self.infos[Jarvis.CategoryDesc.NB_STATES],
+                                splitLine[1]))
+            if int(splitLine[3]) > (self.infos[Jarvis.CategoryDesc.NB_STATES]):
+                raise Exception(
+                    "Parsing ['{}'|L:{}] | State numbers are not supposed to be equal or more than the number of states : expected less than {}, got {}"
+                        .format(Jarvis.CategoryDesc.TRANSITIONS.value, countLine,
+                                self.infos[Jarvis.CategoryDesc.NB_STATES], splitLine[3]))
+        else:
+            raise Exception("Parsing ['{}'|L:{}] | Argument type is not of the expected type (int)".format(
+                Jarvis.CategoryDesc.TRANSITIONS.value, countLine))
+
+        if (splitLine[2].strip("'") not in self.infos[Jarvis.CategoryDesc.INPUT]
+                and splitLine[2].strip("'") != self.infos[Jarvis.CategoryDesc.META]):
+            raise Exception(
+                "Parsing ['{}'|L:{}] | Transition has a character unexpected, it needs to be an input alphabet character or the meta character".format(
+                    Jarvis.CategoryDesc.TRANSITIONS.value, countLine))
+
+        if self.infos[Jarvis.CategoryDesc.OUTPUT]:
+            if (splitLine[4].strip("'") not in self.infos[Jarvis.CategoryDesc.OUTPUT]
+                    and splitLine[4].strip("'") != self.infos[Jarvis.CategoryDesc.META]):
+                raise Exception(
+                    "Parsing ['{}'|L:{}] | Transition has a character unexpected, it needs to be an output alphabet character or the meta character".format(
+                        Jarvis.CategoryDesc.TRANSITIONS.value, countLine))
+
+        node1 = splitLine[1]
+        carac1 = splitLine[2].strip("\'")
+        node2 = splitLine[3]
+        carac2 = splitLine[4].strip("\'")
+
+        if str(carac1) in self.infos[Jarvis.CategoryDesc.TRANSITIONS][int(node1)]:
+            self.infos[Jarvis.CategoryDesc.TRANSITIONS][int(node1)][str(carac1)].append((int(node2), str(carac2)))
+
+        else:
+            self.infos[Jarvis.CategoryDesc.TRANSITIONS][int(node1)][str(carac1)] = [(int(node2), str(carac2))]
+
+
+    def use(self, read: str) -> str:
+        # if not (read in (self.infos[Jarvis.CategoryDesc.INPUT])):
+        #    raise Exception(
+        #        "Use | The argument didn't correspond to the input of Jarvis [expected '{}*' got '{}']".format(
+        #            self.infos[Jarvis.CategoryDesc.INPUT], read))
+
+        output = ""
+        curNode = self.infos[Jarvis.CategoryDesc.INIT][0]
+        for node in self.infos[Jarvis.CategoryDesc.INIT]:
+            if str(read[:1]) in (self.infos[Jarvis.CategoryDesc.TRANSITIONS][int(node)]):
+                curNode = node
+                break
+
+        print("input = {}".format(read))
+        for letter in read:
+            print("{} | '{}'".format(curNode, letter))
+            if letter in self.infos[Jarvis.CategoryDesc.TRANSITIONS][curNode]:
+                path = self.infos[Jarvis.CategoryDesc.TRANSITIONS][curNode][letter]
+                for availablePath in path:
+                    curNode = availablePath[0]
+                    if not availablePath[1] in self.infos[Jarvis.CategoryDesc.META]:
+                        output += availablePath[1]
+                    print("\t->{}".format(availablePath[1]))
+            else:
+                return "can't find a occurrence"
+
+        if curNode in self.infos[Jarvis.CategoryDesc.FINAL]:
+            return output
+        else:
+            return "the last node is not final"
 
 
 jarvis = Jarvis("../dir/S0.descr")
+print(jarvis.use("010110111"))
