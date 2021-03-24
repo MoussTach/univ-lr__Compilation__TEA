@@ -1,20 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+from networkx.drawing.nx_agraph import write_dot
 
-# Create a graph and add a self-loop to node 0
-G = nx.complete_graph(3, create_using=nx.DiGraph)
-G.add_edge(0, 0)
-pos = nx.circular_layout(G)
-
-# As of version 2.6, self-loops are drawn by default with the same styling as
-# other edges
-nx.draw(G, pos, with_labels=True)
-
-# Add self-loops to the remaining nodes
-edgelist = [(1, 1), (2, 2)]
-G.add_edges_from(edgelist)
-
-# Draw the newly added self-loops with different formatting
-nx.draw_networkx_edges(G, pos, edgelist=edgelist)
-
-plt.show()
+G = nx.DiGraph()
+G.add_edges_from([(0,1), (0,2), (1,1), (1,2)])
+write_dot(G,'graph.dot')
