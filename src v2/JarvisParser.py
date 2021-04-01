@@ -101,7 +101,7 @@ class JarvisParser:
                 raise Exception("Parsing ['{}'|L:{}] | The meta character doesn't have to be in the input alphabet."
                                 .format(CategoryDesc.NB_STATES, countLine, 2, len(splitLine)))
             else:
-                self.infos[CategoryDesc.INPUT] = splitLine[1]
+                self.infos[CategoryDesc.INPUT] = splitLine[1].strip("\"")
                 self.is_input_alphabet_set = True
 
                 self.infos[CategoryDesc.INPUT] += "l" #Gérer le lambda
@@ -129,7 +129,7 @@ class JarvisParser:
                 raise Exception("Parsing ['{}'|L:{}] | The meta character doesn't have to be in the output alphabet."
                                 .format(CategoryDesc.NB_STATES, countLine, 2, len(splitLine)))
             else:
-                self.infos[CategoryDesc.OUTPUT] = splitLine[1]
+                self.infos[CategoryDesc.OUTPUT] = splitLine[1].strip("\"")
                 self.is_output_alphabet_set = True
         else:
             raise Exception(
