@@ -18,6 +18,8 @@ class Jarvis:
     def _lambdafermeture(self, states, list=None):
         if list is None:
             list = []
+            for state in states:
+                list.append(state)
         for i in range(0,len(states)):
             t = states[i]
             if t > (self.infos[CategoryDesc.NB_STATES]-1): #str(t).isnumeric() ?
@@ -30,7 +32,7 @@ class Jarvis:
                             list.append(output_state_lambda)
                             self._lambdafermeture([output_state_lambda], list)
 
-        #print(list)
+        print(list)
         return list
 
     def transiter(self, states, characterRead, list=None):
@@ -96,33 +98,8 @@ class Jarvis:
                     # On récupère le résultat du lambda fermeture du prochain groupe d'états
                     P = L[index_L]
                     index_L += 1
-
-
-
-            '''
-            # Si on a atteint le dernier groupe d'états connus, on vérifie si la déterminisation est finie.
-            if index_L == len(L):
-                # On regarde les derniers éléments insérés dans la liste L et on regarde si ils étaient déjà inscrits auparavant
-                new_lambdas_index = L[(len(L) - len(self.infos[CategoryDesc.OUTPUT])):]
-                for lambda_fermeture in new_lambdas_index:
-                    if lambda_fermeture in L[0:new_lambdas_index]:
-                        cpt_determinisation += 1
-                        # Si toutes les nouvelles lambda-fermetures étaient déjà inscrites, alors la déterminisation est finie.
-                        if cpt_determinisation == len(self.infos[CategoryDesc.OUTPUT]):
-                            determinisation_finished = True
-                    else:
-                        # On récupère le résultat du lambda fermeture du prochain groupe d'états
-                        # Création des transitions ici.
-                        pass
-
-            '''
-
-
-
         if len(etats_parcourus) < self.infos[CategoryDesc.NB_STATES]:
             raise Exception("Problème")
-
-
 
     def use(self, read: str) -> str:
         for i in read:
@@ -140,8 +117,8 @@ class Jarvis:
 
         print("input = {}".format(read))
         #self.transiter([3], '0')
-        #self._lambdafermeture([0])
-        self.determinisation()
+        #self._lambdafermeture([0,5])
+        #self.determinisation()
         for letter in read:
             print("{} | '{}'".format(curNode, letter))
 
