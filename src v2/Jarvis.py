@@ -23,7 +23,7 @@ class Jarvis:
                 print("error")
             else:
                 for transition, value in self.infos[CategoryDesc.TRANSITIONS][int(t)].items():
-                    if transition == 'l': #l pour lambda
+                    if transition == self.infos[CategoryDesc.META]:
                         for path in value:
                             output_state_lambda = path[0]
                             if output_state_lambda not in list:
@@ -70,17 +70,17 @@ class Jarvis:
             #Afin d'éviter le traitement inutile des lambda-fermetures vides et de refaire un groupe d'états déjà vu.
             if (P not in L[:(index_L-1)] and P) or len(L) == 1 :
                 # Toutes les lettres de l'alphabet de sortie pour l'appel de transiter.
-                # (Prendre en compte le cas du lambda dans Output ('l'))
+                # (Prendre en compte le cas du lambda dans Output (caractère méta ici))
                 for input_character in self.infos[CategoryDesc.INPUT]:
-                    if input_character != 'l': #Ne pas prendre en compte le caractère lambda.
+                    if input_character != self.infos[CategoryDesc.META]: #Ne pas prendre en compte le caractère lambda.
                         # On transite avec le groupe d'états X à l'aide de l'output_character
                         new_lambdas = self._lambdafermeture(self.transiter(P, input_character))
                         for state in new_lambdas:
                             if state not in etats_parcourus:
                                 etats_parcourus.append(state)
                         L.append(new_lambdas)
-                        #print("Example " + str(index_L-1) + " : " + str(P) + " " + input_character)
-                        #print(new_lambdas)
+                        print("Example " + str(index_L-1) + " : " + str(P) + " " + input_character)
+                        print(new_lambdas)
                         #Création des transitions ici.
                         self.infos[CategoryDesc.TRANSITIONS] = self.infos[CategoryDesc.TRANSITIONS]
 

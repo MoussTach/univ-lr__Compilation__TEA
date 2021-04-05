@@ -97,14 +97,14 @@ class JarvisParser:
                                 "[expected {} - got {}]".format(CategoryDesc.NB_STATES, countLine, 2,
                                                                 len(splitLine)))
 
-            elif splitLine[1].strip("\"").find(self.infos[CategoryDesc.META]) != -1:
-                raise Exception("Parsing ['{}'|L:{}] | The meta character doesn't have to be in the input alphabet."
-                                .format(CategoryDesc.NB_STATES, countLine, 2, len(splitLine)))
+            #elif splitLine[1].strip("\"").find(self.infos[CategoryDesc.META]) != -1:
+            #    raise Exception("Parsing ['{}'|L:{}] | The meta character doesn't have to be in the input alphabet."
+            #                   .format(CategoryDesc.NB_STATES, countLine, 2, len(splitLine)))
             else:
                 self.infos[CategoryDesc.INPUT] = splitLine[1].strip("\"")
                 self.is_input_alphabet_set = True
 
-                self.infos[CategoryDesc.INPUT] += "l" #Gérer le lambda
+                self.infos[CategoryDesc.INPUT] += self.infos[CategoryDesc.META] #Gérer le lambda
         else:
             raise Exception(
                 "Parsing ['{}'|L:{}] | This type of information has already been given.".format(
