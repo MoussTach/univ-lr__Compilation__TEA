@@ -53,7 +53,7 @@ class Jarvis:
         return list
 
     def determinisation(self):
-
+        transition_table = []
         L = []  # Récupérer les groupes d'états X
         index_L = 1 #Parcourir le groupe d'état
         etats_parcourus = []
@@ -79,13 +79,19 @@ class Jarvis:
                             if state not in etats_parcourus:
                                 etats_parcourus.append(state)
                         L.append(new_lambdas)
-                        print("Example " + str(index_L-1) + " : " + str(P) + " " + input_character)
-                        print(new_lambdas)
+                        #print("Example " + str(index_L-1) + " : " + str(P) + " " + input_character)
+                        #print(new_lambdas)
+                        transition_table.append((P, input_character, new_lambdas))
+                        #print(transition_table)
                         #Création des transitions ici.
-                        self.infos[CategoryDesc.TRANSITIONS] = self.infos[CategoryDesc.TRANSITIONS]
+                        #if str(input_character) in self.infos[CategoryDesc.TRANSITIONS][int(P)]:
+                        #    new_transitions[P][str(input_character)].append((str(new_lambdas), str(self.infos[CategoryDesc.META])))
+                        #else:
+                        #    new_transitions[P][str(input_character)] = [(str(new_lambdas), str(self.infos[CategoryDesc.META]))]
 
                 P = L[index_L]
                 index_L += 1
+
             else:
 
                 # Transition vide.
@@ -100,7 +106,52 @@ class Jarvis:
         if len(etats_parcourus) < self.infos[CategoryDesc.NB_STATES]:
             raise Exception("Problème, expected {}, got {} : {}".format(self.infos[CategoryDesc.NB_STATES], len(etats_parcourus), etats_parcourus))
 
-    def use(self, read: str) -> str:
+        self.createDotDeterminized(transition_table)
+
+    def createDot(self):
+        dot = open("graph.dot", "w")
+        dot.write("digraph G {\n")
+        num = 0
+
+        for transition in self.infos[CategoryDesc.TRANSITIONS]:
+
+            for (key,value) in transition.items():
+                nodeNumber = str(num)
+                nodeNeighbor = str(value[0][0])
+                inputCharacter = key
+                outputCharacter = str(value[0][1])
+                string = nodeNumber + "->" + nodeNeighbor + " [label=\"" + inputCharacter + "/" + outputCharacter + "\"]\n"
+                dot.write(string)
+            num += 1
+
+        dot.write("}\n")
+
+    def createDotDeterminized(self, transitions):
+        dot = open("determinizedGraph.dot", "w")
+        dot.write("digraph G {\n")
+
+        for t in transitions:
+            if(t[2]):
+                nodeNumber = str(t[0])
+                nodeNumber = nodeNumber.strip('[]')
+                nodeNumber = nodeNumber.replace(", ", "_")
+
+                nodeNeighbor = str(t[2])
+                nodeNeighbor = nodeNeighbor.strip('[]')
+                nodeNeighbor = nodeNeighbor.replace(", ", "_")
+
+                inputCharacter = t[1]
+
+                string = "_" + nodeNumber + "->" + "_" + nodeNeighbor + " [label=\"" + inputCharacter + "\"]\n"
+                dot.write(string)
+
+        dot.write("}\n")
+
+
+
+
+
+    def use(self, read: str, determinisation: bool=False) -> str:
         for i in read:
             if not (i in (self.infos[CategoryDesc.INPUT])):
                 raise Exception(
@@ -115,9 +166,8 @@ class Jarvis:
                 break
 
         print("input = {}".format(read))
-        #self._lambdafermeture((self.transiter([4,6,7], 'b')))
-        #self._lambdafermeture([3,5])
-        self.determinisation()
+        if determinisation:
+            self.determinisation()
         for letter in read:
             print("{} | '{}'".format(curNode, letter))
 

@@ -18,7 +18,7 @@ class JarvisParser:
             CategoryDesc.NB_STATES: -1,
             CategoryDesc.INIT: [0],
             CategoryDesc.FINAL: [],
-            CategoryDesc.TRANSITIONS: None
+            CategoryDesc.TRANSITIONS: None,
         }
 
         parsing = {
