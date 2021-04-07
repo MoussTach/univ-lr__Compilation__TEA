@@ -299,19 +299,12 @@ class Jarvis:
 #S1 : Déterminisation d'un algo sans lambda-transition 1
 #S2 : Déterminisation d'un algo sans lambda-transition 2
 #T0 : Lambda transition
+
 print("__________________________________________________")
 try:
     jarvis = Jarvis("../dir/NDSL04.descr")
     jarvis.setVerbose(True)
     #jarvis.createDot()
     print(jarvis.useAutomate("b", determinisation=True))
-except Exception as err:
-    print("{}{}{}".format("\33[31m", err, "\33[0m"))
-
-print("__________________________________________________")
-try:
-    jarvis.useFileDesc("../dir/T6.descr")
-    #print(jarvis.useAutomate("baabb", determinisation=True))
-    #jarvis.createDot()
 except Exception as err:
     print("{}{}{}".format("\33[31m", err, "\33[0m"))
