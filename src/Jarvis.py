@@ -83,6 +83,7 @@ class Jarvis:
                 self.determinisation_lambda()
             else:
                 self.determinisation_transition()
+            return "determined"
 
         for letter in read:
             print("{} | '{}'".format(curNode, letter)) if self.verbose else ""
