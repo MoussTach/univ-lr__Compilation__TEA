@@ -45,7 +45,7 @@ class Jarvis:
                     if transition == str(characterRead):
                         for path in value:
                             output_state_lambda = path[0]
-                        #output_state_lambda = self.infos[CategoryDesc.TRANSITIONS][int(t)][str(characterRead)][0][0]
+                            #output_state_lambda = self.infos[CategoryDesc.TRANSITIONS][int(t)][str(characterRead)][0][0]
                             if output_state_lambda not in list:
                                 list.append(output_state_lambda)
                                 self.transiter([output_state_lambda], characterRead, list)
@@ -56,8 +56,6 @@ class Jarvis:
         lambda_transition = False
         index = 0
         while (not lambda_transition) and (index < self.infos[CategoryDesc.NB_STATES]-1):
-            print(index)
-            print(self.infos[CategoryDesc.TRANSITIONS][index])
             if self.infos[CategoryDesc.TRANSITIONS][index]:
                 for transition, value in self.infos[CategoryDesc.TRANSITIONS][index].items():
                     if transition == self.infos[CategoryDesc.META]:
@@ -93,7 +91,7 @@ class Jarvis:
                 for input_character in self.infos[CategoryDesc.INPUT]:
                     if input_character != self.infos[CategoryDesc.META]: #Ne pas prendre en compte le caractère lambda.
                         # On transite avec le groupe d'états X à l'aide de l'output_character
-                        new_lambdas = self._lambdafermeture(self.transiter(P, input_character))
+                        new_lambdas = sorted(self._lambdafermeture(self.transiter(P, input_character)))
                         for state in new_lambdas:
                             if state not in etats_parcourus:
                                 etats_parcourus.append(state)
@@ -102,8 +100,8 @@ class Jarvis:
                             states_list.append(P)
 
                         L.append(new_lambdas)
-                        #print("Example " + str(index_L-1) + " : " + str(P) + " " + input_character)
-                        #print(new_lambdas)
+                        print("Example " + str(index_L-1) + " : " + str(P) + " " + input_character)
+                        print(new_lambdas)
                         transition_table.append((P, input_character, new_lambdas))
 
                 P = L[index_L]
@@ -174,7 +172,7 @@ class Jarvis:
                     P = L[index_L]
                     index_L += 1
 
-        print(transition_table)
+        #print(transition_table)
         self.createDotDeterminized(transition_table, states_list)
 
 
@@ -283,8 +281,9 @@ print("__________________________________________________")
 #try:
 #jarvis = Jarvis("../dir/S0.descr")
 #print(jarvis.use("ababababa", determinisation=True))
-jarvis = Jarvis("../dir/C0.descr")
-print(jarvis.use("0101101110", determinisation=True))
+jarvis = Jarvis("../dir/T0.descr")
+print(jarvis.use("ababaa", determinisation=True))
+#print(jarvis.use("0101101110", determinisation=True))
 #except Exception as err:
     #print("{}{}{}".format("\33[31m", err, "\33[0m"))
 '''
