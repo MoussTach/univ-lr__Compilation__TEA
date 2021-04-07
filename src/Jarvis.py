@@ -100,7 +100,7 @@ class Jarvis:
                 return "can't find a occurrence"
 
         if curNode in self.infos[CategoryDesc.FINAL]:
-            self.createDot()
+            #self.createDot()
             return output
         else:
             return "the last node is not final"
@@ -183,7 +183,13 @@ class Jarvis:
         L = []  # Récupérer les groupes d'états X
         index_L = 1  # Parcourir le groupe d'état
         etats_parcourus = []
-        P = self.__lambdafermeture(self.infos[CategoryDesc.INIT])
+
+        # Dans le cas d'états initiaux multiples, on récupère le premier par défaut.
+        if len(self.infos[CategoryDesc.INIT]) > 1:
+            P = self.__lambdafermeture([self.infos[CategoryDesc.INIT][0]])
+        else:
+            P = self.__lambdafermeture(self.infos[CategoryDesc.INIT])
+
         determinisation_finished = False
         # On récupère les états du 1er groupe d'états X
         for state in P:
@@ -200,7 +206,7 @@ class Jarvis:
                 for input_character in self.infos[CategoryDesc.INPUT]:
                     if input_character != self.infos[CategoryDesc.META]:  # Ne pas prendre en compte le caractère lambda.
                         # On transite avec le groupe d'états X à l'aide de l'output_character
-                        new_lambdas = sorted(self._lambdafermeture(self.transiter(P, input_character)))
+                        new_lambdas = sorted(self.__lambdafermeture(self.__transiter(P, input_character)))
                         for state in new_lambdas:
                             if state not in etats_parcourus:
                                 etats_parcourus.append(state)
@@ -237,7 +243,12 @@ class Jarvis:
         L = []  # Récupérer les groupes d'états X
         index_L = 0  # Parcourir le groupe d'état
         etats_parcourus = []
-        P = self.infos[CategoryDesc.INIT]
+
+        #Dans le cas d'états initiaux multiples, on récupère le premier par défaut.
+        if len(self.infos[CategoryDesc.INIT]) > 1:
+            P = [self.infos[CategoryDesc.INIT][0]]
+        else:
+            P = self.infos[CategoryDesc.INIT]
         # On récupère les états du 1er groupe d'états X
         for state in P:
             etats_parcourus.append(state)
@@ -283,24 +294,24 @@ class Jarvis:
         print("{}{}{}".format("\33[35m", transition_table, "\33[0m")) if self.verbose else ""
         self.createDotDeterminized(transition_table, states_list)
 
+#C0 : Test de base
+#S0 : Lambda transition
+#S1 : Déterminisation d'un algo sans lambda-transition 1
+#S2 : Déterminisation d'un algo sans lambda-transition 2
+#T0 : Lambda transition
 print("__________________________________________________")
 try:
-    jarvis = Jarvis("../dir/C0.descr")
+    jarvis = Jarvis("../dir/NDSL04.descr")
     jarvis.setVerbose(True)
-    print(jarvis.useAutomate("010110111 1100", determinisation=False))
+    #jarvis.createDot()
+    print(jarvis.useAutomate("b", determinisation=True))
 except Exception as err:
     print("{}{}{}".format("\33[31m", err, "\33[0m"))
 
 print("__________________________________________________")
 try:
-    jarvis.useFileDesc("../dir/S1.descr")
-    print(jarvis.useAutomate("010110111 10 1011100 10", determinisation=True))
-except Exception as err:
-    print("{}{}{}".format("\33[31m", err, "\33[0m"))
-
-print("__________________________________________________")
-try:
-    jarvis.useFileDesc("../dir/C0.descr")
-    print(jarvis.useAutomate("010110111 1100  11100 1101 0 1 1 100", determinisation=True))
+    jarvis.useFileDesc("../dir/T6.descr")
+    #print(jarvis.useAutomate("baabb", determinisation=True))
+    #jarvis.createDot()
 except Exception as err:
     print("{}{}{}".format("\33[31m", err, "\33[0m"))
