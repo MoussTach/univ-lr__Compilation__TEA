@@ -144,6 +144,10 @@ class Jarvis:
 
         for final_state in self.infos[CategoryDesc.FINAL]:
             dot.write(str(final_state) + " [peripheries=2]\n")
+
+        for initial_state in self.infos[CategoryDesc.INIT]: #Pour chaque état initial dans le parsing
+            dot.write(str(initial_state) + " [color=red]\n")
+
         dot.write("}\n")
 
     def createDotDeterminized(self, transitions, states_list):
@@ -173,6 +177,13 @@ class Jarvis:
                         string += "_" + str(state)
                     dot.write(str(string) + " [peripheries=2]\n")
 
+        for initial_state in self.infos[CategoryDesc.INIT]: #Pour chaque état initial dans le parsing
+            for states in states_list:  # Et pour chaque groupe d'états
+                if initial_state in states:  # Si l'état final fait partie de l'un des groupes d'états
+                    string = ""
+                    for state in states:  # On affiche le groupe d'états dans le .dot et on le met en nomenclature "etat final"
+                        string += "_" + str(state)
+                    dot.write(str(string) + " [color=red]\n")
         dot.write("}\n")
 
     def determinisation_lambda(self):
@@ -294,17 +305,12 @@ class Jarvis:
         print("{}{}{}".format("\33[35m", transition_table, "\33[0m")) if self.verbose else ""
         self.createDotDeterminized(transition_table, states_list)
 
-#C0 : Test de base
-#S0 : Lambda transition
-#S1 : Déterminisation d'un algo sans lambda-transition 1
-#S2 : Déterminisation d'un algo sans lambda-transition 2
-#T0 : Lambda transition
-
 print("__________________________________________________")
 try:
-    jarvis = Jarvis("../dir/NDSL04.descr")
+    jarvis = Jarvis("../dir/T6.descr")
     jarvis.setVerbose(True)
-    #jarvis.createDot()
-    print(jarvis.useAutomate("b", determinisation=True))
+    jarvis.createDot()
+    print(jarvis.useAutomate("acbcc", determinisation=False))
 except Exception as err:
     print("{}{}{}".format("\33[31m", err, "\33[0m"))
+
